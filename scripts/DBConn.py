@@ -1,24 +1,23 @@
-import pyodbc
+import firebase_admin
+from firebase_admin import credentials, db
 
-# Configur as informações de conexão
-server = "nome do servidor"
-database = "nome do banco de dados"
-username = "nome de usuario"
-password = "senha"
+# Verifica se o Firebase já foi inicializado
+if not firebase_admin._apps:
+    cred = credentials.Certificate("challenge\cred\challenge-34b16-firebase-adminsdk-3f6qu-3403a911e7.json")
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': "https://challenge-34b16-default-rtdb.firebaseio.com"
+    })
 
-# Estabelecer a conexão
-credencials = pyodbc.connect(
-    "DRIVER={SQL Server};"
-    f"SERVER={server};"
-    f"DATABASE={database}"
-    f"UID={username}"
-    f"PWD={password}"
-)
+# Escrevendo dados
+ref = db.reference('/Main')
+ref.set({
+    "usuario": {
+        "email": "admin1@gmail.com",
+        "senha": "123ABC+"
+    }
+})
 
-conn = pyodbc.connect(credencials)
-print("Conexão Bem Sucedida")
-
-cursor = conn.cursor()
-comando = "SELECT * FROM TABELA"
-cursor.execute(comando)
-cursor.commit()
+#Lendo dados
+ref = db.reference('/Main')
+dados = ref.get()
+print(dados)
